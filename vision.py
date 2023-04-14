@@ -4,3 +4,4 @@
 # function to check if an image has a car
 
 # function to check if the crosswalk is obstructed by anything
+    # if not car, alert
