@@ -5,3 +5,5 @@
 
 # function to check if the crosswalk is obstructed by anything
     # if not car, alert
+    # if car alert by sound or saying it is not safe to cross
+    
