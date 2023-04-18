@@ -1,3 +1,33 @@
+from tkinter import *
+
+
+class MainGUI(Frame):
+    def __init__(self, parent):
+    Frame.__init__(self, parent, bg="white")
+    self.setupGUI()
+   
+def setupGUI(self):
+    self.display = Label(self, text = "", anchor = E, bg ="white", height = 2, font = ("Calibri", 15)
+
+window = Tk()
+
+window.title("Cross Walk Stats")
+
+calc = MainGUI(window)
+
+window.mainloopO()
+
+
+
+
+
+
+
+
+
+
+
+
 # collect data
 # function for cars that ignore light to test efficiency of light
     # if car is detected by camera while stop light is on
