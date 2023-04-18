@@ -1,5 +1,6 @@
 # load gpio and pins for cam, speaker, light
 import GPIO.RPi as GPIO
+from vision import *
 GPIO.setmode(GPIO.BCM)
 def setGPIO():
     gpio = [1]
