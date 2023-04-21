@@ -5,18 +5,28 @@ from ultralytics import YOLO
 import supervision as sv
 
 class Vision:
-    def __init__(self, model, source):
+    def __init__(self, model, source, show=False):
         self.model = YOLO(model + ".pt")
         self.cap = cv.VideoCapture(source)
+        self.show = show
 
-        # THE FOLLOWING SHOULD BE SET TO THE RESOLUTION OF OUR CAMERA
-        # self.cap.set(cv.CAP_PROP_FRAME_WIDTH, frame_width)
-        # self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, frame_height)
+        # THE FOLLOWING SHOULD BE SET TO THE RESOLUTION
+        # OF OUR CAMERA IN PRODUCTION BUILD
+        # self.cap.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
+        # self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
+
+    @property
+    def show(self):
+        return self._show
+    
+    @show.setter
+    def show(self, show):
+        self._show = show
 
     def detect(self):
         _, frame = self.cap.read()
 
-        result = self.model(frame)[0]
+        result = self.model(frame, show=self.show)[0]
         detections = sv.Detections.from_yolov8(result)
         detected = {
             "person": False,
