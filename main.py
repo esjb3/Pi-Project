@@ -1,5 +1,6 @@
 import pygame
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
+from time import sleep
 from vision import Vision
 
 pygame.init()
@@ -15,6 +16,7 @@ class Main(Vision):
         super().__init__("yolov8n", 0, debug)
         
         self.led = 13
+        self.clear_count = 0
         self.debug = debug
 
         self.last = None
@@ -37,33 +39,51 @@ class Main(Vision):
 
     def process_frame(self):
         d = super().detect()
-        print(d, self.last == "clear")
         if d == "clear":
             if self.last != "clear":
                 sounds["clear"].play()
-            self.last = "clear"
+                self.last = "clear"
+            self.clear_count += 1
             return
 
         if d["vehicle"]:
-            sounds["vehicle"].play()
+            if self.last != "vehicle":
+                sounds["vehicle"].play()
             self.last = "vehicle"
+            self.clear_count = 0
         elif d["obstruction"]:
-            sounds["obstruction"].play()
+            if self.last != "obstruction":
+                sounds["obstruction"].play()
             self.last = "obstruction"
+            self.clear_count = 0
+        elif d["person"]:
+            if self.last != "clear" and self.clear_count == 10:
+                sounds["clear"].play()
+                self.last = "clear"
+            self.clear_count += 1
+
         if d["person"]:
-            self.turnOn(LED)
+            self.turnOn(self.led)
+        else:
+            self.turnOff(self.led)
 
     def turnOn(self, pin):
-        GPIO.output(pin, True)
+        # GPIO.output(pin, True)
+        self.surface.fill((255, 158, 0))
+        pygame.display.flip()
 
     def turnOff(self, pin):
-        GPIO.output(pin, False)
+        # GPIO.output(pin, False)
+        self.surface.fill((255, 255, 255))
+        pygame.display.flip()
 
     def start(self):
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.led, GPIO.OUT)
+        # GPIO.setmode(GPIO.BCM)
+        # GPIO.setup(self.led, GPIO.OUT)
+        self.surface = pygame.display.set_mode((640, 380))
 
         while True:
+            pygame.event.get()
             self.process_frame()
 
 main = Main(True)
