@@ -16,6 +16,8 @@ window.title("Cross Walk Stats")
 calc = MainGUI(window)
 
 window.mainloopO()
+                         
+                      https://pyimagesearch.com/2016/05/30/displaying-a-video-feed-with-opencv-and-tkinter/
 
 
 
