@@ -44,17 +44,17 @@ class Main(Vision):
                 sounds["clear"].play()
                 self.last = "clear"
             self.clear_count += 1
-            return
+            
 
         if d["vehicle"]:
             if self.last != "vehicle":
                 sounds["vehicle"].play()
-            self.last = "vehicle"
+                self.last = "vehicle"
             self.clear_count = 0
         elif d["obstruction"]:
             if self.last != "obstruction":
                 sounds["obstruction"].play()
-            self.last = "obstruction"
+                self.last = "obstruction"
             self.clear_count = 0
         elif d["person"]:
             if self.last != "clear" and self.clear_count == 10:
