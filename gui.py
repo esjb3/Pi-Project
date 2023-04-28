@@ -1,23 +1,58 @@
-from tkinter import *
+import pygame
+from pygame.locals import (
+    RLEACCEL,
+    K_UP,
+    K_DOWN,
+    K_LEFT,
+    K_RIGHT,
+    K_ESCAPE,
+    KEYDOWN,
+    QUIT,
+)
 
 
-class MainGUI(Frame):
-    def __init__(self, parent):
-    Frame.__init__(self, parent, bg="white")
-    self.setupGUI()
-   
-def setupGUI(self):
-    self.display = Label(self, text = "", anchor = E, bg ="white", height = 2, font = ("Calibri", 15)
+class Player(pygame.sprite.Sprite):
+    def __init__(self):
+        super(Player, self).__init__()
+        self.surf = pygame.image.load("walker.png").convert()
+        self.surf = pygame.transform.scale(self.surf, (100, 100))
+        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+        self.rect = self.surf.get_rect(center=(400, 300))
 
-window = Tk()
+pygame.init()
+screen = pygame.display.set_mode((800, 600))
+player = Player()
+all_sprites = pygame.sprite.Group()
+all_sprites.add(player)
 
-window.title("Cross Walk Stats")
+running = True
 
-calc = MainGUI(window)
+while running:
+    for event in pygame.event.get():
 
-window.mainloopO()
+        if event.type == KEYDOWN:
+
+            if event.key == K_ESCAPE:
+                running = False
+
+        elif event.type == QUIT:
+            running = False
+        pygame.display.update()
+
+    screen.fill((255, 255, 255))
+    for entity in all_sprites:
+        screen.blit(entity.surf, entity.rect)
+    pygame.display.flip()
+        
+
+
+
+
+
+
+
+
                          
-                      https://pyimagesearch.com/2016/05/30/displaying-a-video-feed-with-opencv-and-tkinter/
 
 
 
