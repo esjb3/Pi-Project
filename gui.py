@@ -1,4 +1,6 @@
 import pygame
+import cv2 as cv
+
 from pygame.locals import (
     RLEACCEL,
     K_UP,
@@ -10,52 +12,23 @@ from pygame.locals import (
     QUIT,
 )
 
+WIDTH = 810
+HEIGHT = 1440
 
-class Player(pygame.sprite.Sprite):
-    def __init__(self):
-        super(Player, self).__init__()
-        self.surf = pygame.image.load("walker.png").convert()
-        self.surf = pygame.transform.scale(self.surf, (400, 600))
-        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
-        self.rect = self.surf.get_rect(center=(200, 300))
+FPS = 60
 
+pygame.init()
+screen = pygame.display.set_mode((HEIGHT, WIDTH), pygame.RESIZABLE)
 
+cap = cv.VideoCapture(0)
 
-        
+running = True
+while running:
+    pygame.event.get()
+    _, frame = cap.read()
 
-
-
-
-
-
-
-
-                         
-
-
-
-
-
-
-
-
-
-
-
-
-# collect data
-# function for cars that ignore light to test efficiency of light
-    # if car is detected by camera while stop light is on
-        # add to counter
-# function for average elapesed time that light stays on
-    # while light is on start timer
-    # when timer stops add the elapsed time to a list
-    # every time an elapsed time is added to a list, it calculates the average
-# function for amount of walkers
-    # if light turns on 
-        # add to counter
-
-# GUI class
-# display the data on right half of screen
-# Left half will alternate pictures of a person walking (if someone is walking) or an
-#  empty street (if no one is walking)
+    screen.fill((255, 255, 255))
+    surf = pygame.image.frombuffer(frame.tobytes(), frame.shape[1::-1], "BGR")
+    surf = pygame.transform.scale_by(surf, (screen.get_height() * .6) / surf.get_height())
+    screen.blit(surf, ((screen.get_width() - surf.get_width()) / 2 * 0.2, (screen.get_height() - surf.get_height()) / 2))
+    pygame.display.flip()
