@@ -1,50 +1,56 @@
 import cv2 as cv
-import argparse
+import time
 
+from collections import deque
 from ultralytics import YOLO
-import supervision as sv
+from ultralytics.yolo.utils.plotting import Annotator
+
+CLEAR = 0
+CAUTION = 1
+DANGER = 2
 
 class Vision:
-    def __init__(self, model, source, show=False):
+    def __init__(self, model, source="0"):
         self.model = YOLO(model + ".pt")
-        self.cap = cv.VideoCapture(source)
-        self.show = show
+        self.source = source
+        self.cache = deque([], 5)
 
-        # THE FOLLOWING SHOULD BE SET TO THE RESOLUTION
-        # OF OUR CAMERA IN PRODUCTION BUILD
-        # self.cap.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
-        # self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
-
-    @property
-    def show(self):
-        return self._show
-    
-    @show.setter
-    def show(self, show):
-        self._show = show
+    def status(self):
+        status = CLEAR
+        for s in self.cache:
+            if s == DANGER:
+                status = DANGER
+            if s == CAUTION:
+                status = CAUTION
+        return status
 
     def detect(self):
-        _, frame = self.cap.read()
+        results = self.model(self.source, True, verbose=False)
 
-        result = self.model(frame, show=self.show)[0]
-        detections = sv.Detections.from_yolov8(result)
-        detected = {
-            "person": False,
-            "vehicle": False,
-            "obstruction": False,
-        }
+        for r in results:
+            annotator = Annotator(r.orig_img)
 
-        for d in detections:
-            conf, class_id = d[2], d[3]
+            status = CLEAR
+            self.person = False
+            self.pcount = 0
+            self.ccount = 0
+            for box in r.boxes:
+                coords, cid, conf = box.xyxy[0], int(box.cls), float(box.conf)
 
-            if conf < 0.65:
-                continue
+                if conf < 0.65:
+                    continue
 
-            if class_id == 0:
-                detected["person"] = True
-            elif class_id in [2, 3]:
-                detected["vehicle"] = True
-            else:
-                detected["obstruction"] = True
+                annotator.box_label(coords, self.model.names[cid])
 
-        return detected
+                if cid == 0:
+                    self.person = True
+                    self.pcount += 1
+                elif cid in [2, 3, 67]:
+                    status = DANGER
+                    self.ccount += 1
+                elif status != DANGER:
+                    status = CAUTION
+            self.cache.append(status)
+
+            frame = annotator.result()
+            yield frame
