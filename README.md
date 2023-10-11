@@ -19,5 +19,3 @@ The GUI is a live feed of the camera and it is also a counter of how many people
 
 
 
-Gantt Chart
-Insert your project's Gantt chart here.  Make sure to modify the spreadsheet provided.  An easy way to insert the spreadsheet is to highlight the relevant cells in the spreadsheet, copy it to the clipboard via Ctrl+C, and paste it as a Bitmap (centered and using no wrap) via Shift+Ctrl+V.  Feel free to briefly discuss the schedule.
